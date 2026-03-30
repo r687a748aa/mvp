@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Tokyo Travel Guide 2026</title>
+    
+    <!-- App 模式設定 (iOS) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="東京2026">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .safe-area-bottom {
+            padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-top: 0.5px solid rgba(0, 0, 0, 0.1);
+        }
+        .active-tab {
+            color: #ef4444;
+            transform: translateY(-2px);
+            transition: all 0.2s ease;
+        }
+        /* 隱藏捲動條但保留功能 */
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="pb-32">
+
+    <!-- 頂部標題欄 -->
+    <header class="bg-white px-6 pt-16 pb-6 shadow-sm sticky top-0 z-50">
+        <h1 class="text-2xl font-black text-gray-800">東京冒險 <span class="text-red-500">2026</span></h1>
+        <div class="flex justify-between items-center mt-1">
+            <p class="text-gray-400 text-xs">5 Days | Shinjuku Base</p>
+            <span id="sync-status" class="text-[10px] bg-green-100 text-green-600 px-2 py-0.5 rounded-full">已與本地同步</span>
+        </div>
+    </header>
+
+    <main id="app-content" class="p-6">
+        <!-- 行程分頁 -->
+        <section id="view-itinerary" class="space-y-4 animate-in fade-in duration-300">
+            <h2 class="text-lg font-bold mb-4 flex items-center">
+                <i class="fa-solid fa-calendar-day mr-2 text-red-500"></i> 每日行程
+            </h2>
+            
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-50 active:scale-[0.98] transition-transform">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-[10px] font-black bg-red-500 text-white px-2 py-0.5 rounded">DAY 1</span>
+                    <span class="text-xs text-gray-400">機場直達</span>
+                </div>
+                <h3 class="font-bold text-gray-800 text-lg">新宿與東京都廳</h3>
+                <p class="text-sm text-gray-500 mt-1 leading-relaxed">入住飯店後前往都廳 45 樓看免費夜景，隨後在新宿歌舞伎町散策。</p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="https://www.google.com/maps/search/東京都庁" target="_blank" class="flex-1 text-center py-2 bg-gray-50 rounded-xl text-xs font-bold text-gray-600">
+                        <i class="fa-solid fa-location-dot mr-1"></i> 地圖
+                    </a>
+                    <button class="flex-1 py-2 bg-gray-50 rounded-xl text-xs font-bold text-gray-600">
+                        <i class="fa-solid fa-circle-info mr-1"></i> 詳情
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-50 active:scale-[0.98] transition-transform">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-[10px] font-black bg-red-500 text-white px-2 py-0.5 rounded">DAY 3</span>
+                    <span class="text-xs text-gray-400">海之近郊</span>
+                </div>
+                <h3 class="font-bold text-gray-800 text-lg">鎌倉 & 江之島</h3>
+                <p class="text-sm text-gray-500 mt-1 leading-relaxed">搭乘江之電，造訪平交道與長谷寺。推薦在由比濱海灘看夕陽。</p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="https://www.google.com/maps/search/鎌倉高校前駅" target="_blank" class="flex-1 text-center py-2 bg-gray-50 rounded-xl text-xs font-bold text-gray-600">
+                        <i class="fa-solid fa-location-dot mr-1"></i> 地圖
+                    </a>
+                    <button class="flex-1 py-2 bg-gray-50 rounded-xl text-xs font-bold text-gray-600">
+                        <i class="fa-solid fa-circle-info mr-1"></i> 詳情
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 預算分頁 -->
+        <section id="view-budget" class="hidden space-y-4 animate-in fade-in">
+            <h2 class="text-lg font-bold mb-4">預算儀表板</h2>
+            <div class="bg-gray-900 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <p class="text-gray-400 text-xs tracking-widest uppercase">Total Balance</p>
+                    <p class="text-4xl font-black mt-2 tracking-tight">$41,000 <span class="text-sm font-light opacity-50">TWD</span></p>
+                    <div class="mt-8 flex justify-between items-end">
+                        <div class="w-2/3">
+                            <div class="h-1.5 bg-gray-800 rounded-full">
+                                <div class="bg-gradient-to-r from-red-500 to-orange-400 h-full w-[35%] rounded-full"></div>
+                            </div>
+                            <p class="text-[10px] mt-2 text-gray-500 font-medium">已預付機票與住宿 (35%)</p>
+                        </div>
+                        <i class="fa-solid fa-paper-plane text-3xl opacity-20"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 清單分頁 -->
+        <section id="view-checklist" class="hidden space-y-4 animate-in fade-in">
+            <h2 class="text-lg font-bold mb-4">行前 Check-in</h2>
+            <div class="bg-white p-2 rounded-[2rem] shadow-sm border border-gray-50">
+                <div id="checklist-container" class="divide-y divide-gray-50">
+                    <!-- JavaScript 會動態生成內容 -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部 Tab Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 glass-nav safe-area-bottom z-50">
+        <div class="flex justify-around items-center h-16">
+            <button onclick="switchTab('itinerary')" class="flex flex-col items-center space-y-1 active-tab transition-all" id="nav-itinerary">
+                <i class="fa-solid fa-compass text-xl"></i>
+                <span class="text-[10px] font-bold">行程</span>
+            </button>
+            <button onclick="switchTab('budget')" class="flex flex-col items-center space-y-1 text-gray-300" id="nav-budget">
+                <i class="fa-solid fa-chart-pie text-xl"></i>
+                <span class="text-[10px] font-bold">預算</span>
+            </button>
+            <button onclick="switchTab('checklist')" class="flex flex-col items-center space-y-1 text-gray-300" id="nav-checklist">
+                <i class="fa-solid fa-check-double text-xl"></i>
+                <span class="text-[10px] font-bold">準備</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // 初始清單資料
+        const defaultTasks = [
+            { id: 1, text: "辦理/換發護照", done: true },
+            { id: 2, text: "預訂日本網卡/eSIM", done: false },
+            { id: 3, text: "填寫 Visit Japan Web", done: false },
+            { id: 4, text: "兌換日幣現金", done: false },
+            { id: 5, text: "投保旅平險", done: false }
+        ];
+
+        // 從 LocalStorage 讀取或初始化
+        let tasks = JSON.parse(localStorage.getItem('tokyo_tasks')) || defaultTasks;
+
+        function renderChecklist() {
+            const container = document.getElementById('checklist-container');
+            container.innerHTML = tasks.map(task => `
+                <div class="flex items-center p-4 hover:bg-gray-50 transition-colors" onclick="toggleTask(${task.id})">
+                    <div class="w-6 h-6 rounded-full border-2 ${task.done ? 'bg-red-500 border-red-500' : 'border-gray-200'} flex items-center justify-center mr-4 transition-all">
+                        ${task.done ? '<i class="fa-solid fa-check text-white text-[10px]"></i>' : ''}
+                    </div>
+                    <span class="text-sm ${task.done ? 'text-gray-300 line-through' : 'text-gray-700'} font-medium">${task.text}</span>
+                </div>
+            `).join('');
+            localStorage.setItem('tokyo_tasks', JSON.stringify(tasks));
+        }
+
+        function toggleTask(id) {
+            tasks = tasks.map(t => t.id === id ? {...t, done: !t.done} : t);
+            renderChecklist();
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+        }
+
+        function switchTab(tab) {
+            const tabs = ['itinerary', 'budget', 'checklist'];
+            tabs.forEach(t => {
+                document.getElementById('view-' + t).classList.add('hidden');
+                document.getElementById('nav-' + t).classList.remove('active-tab');
+                document.getElementById('nav-' + t).classList.add('text-gray-300');
+            });
+
+            document.getElementById('view-' + tab).classList.remove('hidden');
+            document.getElementById('nav-' + tab).classList.add('active-tab');
+            document.getElementById('nav-' + tab).classList.remove('text-gray-300');
+            
+            if (window.navigator.vibrate) window.navigator.vibrate(5);
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // 初始化
+        window.onload = () => {
+            renderChecklist();
+        };
+    </script>
+</body>
+</html>
+
