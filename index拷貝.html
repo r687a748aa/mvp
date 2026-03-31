@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>巧克力女僕財務管家</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #FDFBF0; /* 象牙奶油色 */
+        }
+        .bow-shadow {
+            filter: drop-shadow(0 2px 4px rgba(62, 39, 35, 0.2));
+        }
+        /* 隱藏滾動條 */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+const { useState, useMemo, useCallback } = React;
+
+// --- 圖標組件 ---
+const BowIcon = ({ size = 24, className = "" }) => /*#__PURE__*/
+React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", className: className }, /*#__PURE__*/
+React.createElement("path", { d: "M12,10.5 C12.8,10.5 13.5,11.2 13.5,12 C13.5,12.8 12.8,13.5 12,13.5 C11.2,13.5 10.5,12.8 10.5,12 C10.5,11.2 11.2,10.5 12,10.5 Z M7.5,7.5 C9.5,7.5 11,9 11,11 L11,13 C11,15 9.5,16.5 7.5,16.5 C5.5,16.5 4,15 4,13 L4,11 C4,9 5.5,7.5 7.5,7.5 Z M16.5,7.5 C18.5,7.5 20,9 20,11 L20,13 C20,15 18.5,16.5 16.5,16.5 C14.5,16.5 13,15 13,13 L13,11 C13,9 14.5,7.5 16.5,7.5 Z" })
+);
+
+
+const TrashIcon = ({ size = 16 }) => /*#__PURE__*/
+React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("path", { d: "M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6" }));
+
+
+const App = () => {
+  const [transactions, setTransactions] = useState([
+  { id: 1, text: '主人優雅的午餐', amount: -350, currency: 'TWD', type: 'expense', date: '2024-03-20' },
+  { id: 2, text: '執事打賞金', amount: 5000, currency: 'TWD', type: 'income', date: '2024-03-15' },
+  { id: 3, text: '可可色蝴蝶結', amount: -1500, currency: 'JPY', type: 'expense', date: '2024-03-18' }]
+  );
+
+  const [formData, setFormData] = useState({
+    text: '',
+    amount: '',
+    currency: 'TWD',
+    type: 'expense'
+  });
+
+  const JPY_RATE = 0.21;
+  const expenseColor = "#8D5B3E"; // 支出與 1 JPY 的一致顏色 (奶茶可可)
+
+  // 效能優化：計算總額
+  const totalBalance = useMemo(() => {
+    return transactions.reduce((acc, item) => {
+      const value = item.currency === 'JPY' ? item.amount * JPY_RATE : item.amount;
+      return acc + value;
+    }, 0);
+  }, [transactions]);
+
+  const addTransaction = useCallback((e) => {
+    e.preventDefault();
+    if (!formData.text || !formData.amount) return;
+
+    const newTransaction = {
+      id: Date.now(),
+      text: formData.text,
+      amount: formData.type === 'expense' ? -Math.abs(Number(formData.amount)) : Math.abs(Number(formData.amount)),
+      currency: formData.currency,
+      type: formData.type,
+      date: new Date().toLocaleDateString('zh-TW')
+    };
+
+    setTransactions((prev) => [newTransaction, ...prev]);
+    setFormData((prev) => ({ ...prev, text: '', amount: '' }));
+  }, [formData]);
+
+  const deleteTransaction = useCallback((id) => {
+    setTransactions((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  return (/*#__PURE__*/
+    React.createElement("div", { className: "min-h-screen p-4 pb-20 md:p-8 flex justify-center selection:bg-[#D7CCC8]" }, /*#__PURE__*/
+    React.createElement("div", { className: "w-full max-w-md" }, /*#__PURE__*/
+
+
+    React.createElement("header", { className: "mb-8 text-center" }, /*#__PURE__*/
+    React.createElement("div", { className: "inline-block p-2 bg-white rounded-full mb-3 shadow-sm border-2 border-[#D7CCC8] bow-shadow" }, /*#__PURE__*/
+    React.createElement(BowIcon, { className: "text-[#3E2723]", size: 32 })
+    ), /*#__PURE__*/
+    React.createElement("h1", { className: "text-2xl font-black text-[#3E2723] tracking-tight" }, "\u4E3B\u4EBA\uFF0C\u8336\u9EDE\u6E96\u5099\u597D\u4E86 \u2661"), /*#__PURE__*/
+    React.createElement("p", { className: "text-[#8D5B3E] text-[10px] font-bold mt-1 tracking-widest uppercase opacity-70" }, "Premium Chocolate Maid Service")
+    ), /*#__PURE__*/
+
+
+    React.createElement("div", { className: "relative bg-[#3E2723] rounded-[2.5rem] p-8 text-[#FDFBF0] shadow-2xl mb-8 overflow-hidden border-b-8 border-[#D7CCC8] transform transition-transform active:scale-[0.98]" }, /*#__PURE__*/
+
+    React.createElement("div", { className: "absolute top-0 left-0 w-full h-3 flex justify-around opacity-20" },
+    [...Array(10)].map((_, i) => /*#__PURE__*/
+    React.createElement("div", { key: i, className: "w-12 h-8 bg-white rounded-full -mt-5" })
+    )
+    ), /*#__PURE__*/
+
+    React.createElement("div", { className: "flex justify-between items-start mb-4 relative z-10" }, /*#__PURE__*/
+    React.createElement("span", { className: "text-[#D7CCC8] text-xs font-bold flex items-center gap-2" }, /*#__PURE__*/
+    React.createElement("span", { className: "w-2 h-2 bg-pink-400 rounded-full animate-pulse" }), "\u4E3B\u4EBA\u7684\u8CC7\u7522\u7E3D\u984D (TWD)"
+
+    ), /*#__PURE__*/
+    React.createElement("svg", { width: "20", height: "20", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", className: "text-amber-200" }, /*#__PURE__*/React.createElement("path", { d: "m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" }))
+    ), /*#__PURE__*/
+
+    React.createElement("div", { className: "text-4xl font-black mb-2 relative z-10 tracking-tight drop-shadow-md" }, "$",
+    totalBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })
+    ), /*#__PURE__*/
+
+    React.createElement("div", { className: "flex items-center gap-2 text-sm mt-5 relative z-10" }, /*#__PURE__*/
+    React.createElement("div", { className: "bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-[10px] font-black tracking-wider uppercase" }, "\u9B54\u6CD5\u532F\u7387: ", /*#__PURE__*/
+    React.createElement("span", { style: { color: expenseColor }, className: "brightness-150 font-black" }, "1 JPY"), " = 0.21 TWD"
+    )
+    )
+    ), /*#__PURE__*/
+
+
+    React.createElement("div", { className: "bg-white rounded-[2.2rem] p-6 shadow-xl mb-8 border-t-4 border-[#3E2723]" }, /*#__PURE__*/
+    React.createElement("form", { onSubmit: addTransaction, className: "space-y-4" }, /*#__PURE__*/
+    React.createElement("input", {
+      type: "text",
+      placeholder: "\u8ACB\u5429\u5490\u9805\u76EE\u5167\u5BB9...",
+      className: "w-full bg-[#FDFBF0] border-2 border-transparent focus:border-[#D7CCC8] rounded-2xl p-4 text-sm outline-none text-[#3E2723] font-bold transition-all placeholder:text-[#D7CCC8]",
+      value: formData.text,
+      onChange: (e) => setFormData({ ...formData, text: e.target.value }) }
+    ), /*#__PURE__*/
+
+    React.createElement("input", {
+      type: "number",
+      placeholder: "\u8F38\u5165\u91D1\u984D",
+      className: "w-full bg-[#FDFBF0] border-2 border-transparent focus:border-[#D7CCC8] rounded-2xl p-4 text-sm outline-none text-[#3E2723] font-bold transition-all placeholder:text-[#D7CCC8]",
+      value: formData.amount,
+      onChange: (e) => setFormData({ ...formData, amount: e.target.value }) }
+    ), /*#__PURE__*/
+
+
+    React.createElement("div", { className: "flex gap-3" }, /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: () => setFormData({ ...formData, currency: 'TWD' }),
+      className: `flex-1 py-3.5 rounded-2xl text-[10px] font-black transition-all border-2 ${formData.currency === 'TWD' ? 'bg-[#3E2723] text-white border-[#3E2723] shadow-lg' : 'bg-white text-[#D7CCC8] border-[#F5F5F5]'}` },
+    "\u53F0\u5E63 TWD"
+
+    ), /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: () => setFormData({ ...formData, currency: 'JPY' }),
+      className: `flex-1 py-3.5 rounded-2xl text-[10px] font-black transition-all border-2 ${formData.currency === 'JPY' ? 'bg-[#3E2723] text-white border-[#3E2723] shadow-lg' : 'bg-white text-[#D7CCC8] border-[#F5F5F5]'}` },
+    "\u65E5\u5E63 JPY"
+
+    )
+    ), /*#__PURE__*/
+
+    React.createElement("div", { className: "grid grid-cols-2 gap-3 pt-1" }, /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: () => setFormData({ ...formData, type: 'income' }),
+      className: `p-4 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 ${formData.type === 'income' ? 'bg-amber-500 text-white shadow-md scale-[1.02]' : 'bg-[#FDFBF0] text-[#D7CCC8]'}` },
+    "\u6536\u5165"
+
+    ), /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: () => setFormData({ ...formData, type: 'expense' }),
+      className: `p-4 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 ${formData.type === 'expense' ? 'bg-[#8D5B3E] text-white shadow-md scale-[1.02]' : 'bg-[#FDFBF0] text-[#D7CCC8]'}` },
+    "\u652F\u51FA"
+
+    )
+    ), /*#__PURE__*/
+
+    React.createElement("button", {
+      type: "submit",
+      className: "w-full bg-[#3E2723] text-white rounded-2xl p-5 text-sm font-black hover:brightness-110 active:scale-95 transition-all shadow-xl flex items-center justify-center gap-3 mt-2" },
+    "\u5448\u5831\u7D66\u4E3B\u4EBA \u2661"
+
+    )
+    )
+    ), /*#__PURE__*/
+
+
+    React.createElement("div", { className: "pb-10" }, /*#__PURE__*/
+    React.createElement("div", { className: "flex items-center gap-2 mb-6 px-2" }, /*#__PURE__*/
+    React.createElement("div", { className: "h-[1px] flex-1 bg-[#D7CCC8]" }), /*#__PURE__*/
+    React.createElement("span", { className: "text-[10px] font-black text-[#D7CCC8] uppercase tracking-[0.4em]" }, "Historical Notes"), /*#__PURE__*/
+    React.createElement("div", { className: "h-[1px] flex-1 bg-[#D7CCC8]" })
+    ), /*#__PURE__*/
+
+    React.createElement("div", { className: "space-y-4" },
+    transactions.length === 0 ? /*#__PURE__*/
+    React.createElement("div", { className: "text-center py-12 text-[#D7CCC8] text-xs italic bg-white/40 rounded-[2rem] border-2 border-dashed border-[#D7CCC8]" }, "\u76EE\u524D\u9084\u6C92\u6709\u4EFB\u4F55\u7D00\u9304\u5594\uFF0C\u4E3B\u4EBA\u3002"
+
+    ) :
+
+    transactions.map((t) => /*#__PURE__*/
+    React.createElement("div", { key: t.id, className: "bg-white p-5 rounded-[2rem] flex items-center justify-between shadow-sm border-2 border-transparent hover:border-[#D7CCC8] transition-all group active:bg-[#FDFBF0]" }, /*#__PURE__*/
+    React.createElement("div", { className: "flex items-center gap-4" }, /*#__PURE__*/
+    React.createElement("div", { className: `w-12 h-12 rounded-full flex items-center justify-center transition-colors ${t.type === 'income' ? 'bg-amber-50 text-amber-600' : 'bg-[#F8F0EC] text-[#8D5B3E]'}` },
+    t.type === 'income' ? '↑' : '↓'
+    ), /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
+    React.createElement("div", { className: "text-sm font-black text-[#3E2723]" }, t.text), /*#__PURE__*/
+    React.createElement("div", { className: "text-[10px] text-[#D7CCC8] font-bold" }, t.date)
+    )
+    ), /*#__PURE__*/
+    React.createElement("div", { className: "flex items-center gap-4" }, /*#__PURE__*/
+    React.createElement("div", { className: "text-right" }, /*#__PURE__*/
+    React.createElement("div", { className: `text-sm font-black ${t.type === 'income' ? 'text-amber-600' : 'text-[#8D5B3E]'}` },
+    t.amount > 0 ? '+' : '', t.amount.toLocaleString(), /*#__PURE__*/
+    React.createElement("span", { className: "ml-1 text-[9px] opacity-60 uppercase" }, t.currency)
+    ),
+    t.currency === 'JPY' && /*#__PURE__*/
+    React.createElement("div", { className: "text-[10px] text-[#D7CCC8] italic font-medium" }, "\u2248 $",
+    Math.abs(t.amount * JPY_RATE).toFixed(0), " TWD"
+    )
+
+    ), /*#__PURE__*/
+    React.createElement("button", {
+      onClick: () => deleteTransaction(t.id),
+      className: "text-[#D7CCC8] hover:text-[#3E2723] transition-colors p-2" }, /*#__PURE__*/
+
+    React.createElement(TrashIcon, null)
+    )
+    )
+    )
+    )
+
+    )
+    )
+    )
+    ));
+
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(/*#__PURE__*/React.createElement(App, null));</script>
+</body>
+</html>
