@@ -277,6 +277,15 @@ body{
  .day-heading{font-size:17px;margin-bottom:10px;padding:8px 15px}
 }
 
+
+/* Date navigation: larger, clearer labels; no separate daily banner */
+.tab-date{font-size:clamp(15px,1.45vw,19px)!important;font-weight:800!important;line-height:1.25!important}
+.tab-day{font-size:clamp(20px,1.9vw,26px)!important;font-weight:1000!important;line-height:1.2!important}
+@media(max-width:560px){
+ .tab-date{font-size:12px!important}
+ .tab-day{font-size:16px!important}
+}
+
 </style>
 </head>
 <body>
@@ -351,7 +360,7 @@ function renderDay(i){
   return `<div class="stop stop-with-image"><div class="stop-content"><h3>${s[1]}</h3>${detailHtml}${s[3]?`<div class="links"><a class="text-link" target="_blank" rel="noopener" href="${s[3]}">🗺️ 地圖</a></div>`:''}</div><img class="stop-photo" src="${stopImages[i][n]||dayImages[i]}" alt="${s[1]}"></div>`;
  }).join('');
  document.getElementById('dayPanel').innerHTML=`
- <div class="itinerary"><div class="day-heading">🗓️ Day ${i+1}｜${d.title}</div><div class="panel timeline">${stops}</div></div>`;
+ <div class="itinerary"><div class="panel timeline">${stops}</div></div>`;
 
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>renderDay(Number(b.dataset.day))));
