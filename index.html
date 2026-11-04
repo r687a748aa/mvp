@@ -286,6 +286,34 @@ body{
  .tab-day{font-size:16px!important}
 }
 
+
+/* Fix date tabs: keep every character inside each button on narrow screens */
+.tabs{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:6px!important}
+.tab{
+  min-width:0!important;max-width:100%!important;
+  padding:7px 2px!important;overflow:visible!important;
+  white-space:normal!important;word-break:keep-all!important;
+  gap:3px!important;line-height:1.12!important;
+}
+.tab-date{
+  display:block!important;width:100%!important;
+  font-size:clamp(11px,1.25vw,16px)!important;
+  line-height:1.2!important;white-space:nowrap!important;
+  letter-spacing:-.04em!important;
+}
+.tab-day{
+  display:block!important;width:100%!important;
+  font-size:clamp(15px,1.55vw,21px)!important;
+  line-height:1.15!important;white-space:nowrap!important;
+  letter-spacing:-.035em!important;
+}
+@media(max-width:560px){
+  .tabs{gap:4px!important}
+  .tab{padding:7px 1px!important;border-radius:16px!important}
+  .tab-date{font-size:10px!important;letter-spacing:-.06em!important}
+  .tab-day{font-size:15px!important;letter-spacing:-.055em!important}
+}
+
 </style>
 </head>
 <body>
